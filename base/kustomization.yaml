@@ -1,0 +1,6 @@
+
+namespace: log4shell
+
+resources:
+  - namespace.yaml
+  - application.yaml
