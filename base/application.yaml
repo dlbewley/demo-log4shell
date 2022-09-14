@@ -1,37 +1,38 @@
 apiVersion: v1
 items:
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp: null
-    labels:
-      app: log4shell
-      app.kubernetes.io/component: log4shell
-      app.kubernetes.io/instance: log4shell
-    name: log4shell
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - annotations:
-        openshift.io/imported-from: quay.io/tjungbau/log4shell-app:latest
-      from:
-        kind: DockerImage
-        name: quay.io/tjungbau/log4shell-app:latest
-      generation: null
-      importPolicy: {}
-      name: latest
-      referencePolicy:
-        type: ""
-  status:
-    dockerImageRepository: ""
+# https://issues.redhat.com/browse/OCPBUGSM-22430
+#- apiVersion: image.openshift.io/v1
+#  kind: ImageStream
+#  metadata:
+#    annotations:
+#      openshift.io/generated-by: OpenShiftNewApp
+#    creationTimestamp: null
+#    labels:
+#      app: log4shell
+#      app.kubernetes.io/component: log4shell
+#      app.kubernetes.io/instance: log4shell
+#    name: log4shell
+#  spec:
+#    lookupPolicy:
+#      local: false
+#    tags:
+#    - annotations:
+#        openshift.io/imported-from: quay.io/tjungbau/log4shell-app:latest
+#      from:
+#        kind: DockerImage
+#        name: quay.io/tjungbau/log4shell-app:latest
+#      generation: null
+#      importPolicy: {}
+#      name: latest
+#      referencePolicy:
+#        type: ""
+#  status:
+#    dockerImageRepository: ""
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     annotations:
-      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"log4shell:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"log4shell\")].image"}]'
+#image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"log4shell:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"log4shell\")].image"}]'
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     labels:
@@ -54,7 +55,7 @@ items:
           deployment: log4shell
       spec:
         containers:
-        - image: ' '
+        - image: quay.io/tjungbau/log4shell-app:latest
           name: log4shell
           ports:
           - containerPort: 8080

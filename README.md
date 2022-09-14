@@ -23,42 +23,26 @@ Remove and redeploy the application.
 
 ```bash
 oc delete -k base
+
 oc apply -k base
-```
 
-Vulnerability will be detected and automatically scaled to zero at deployment time.
-
-Example on a SNO cluster. 
-Behavior is not what I expected to see.
-
-```
-# log4j policy is set to enforce at build, deploy:
-(⎈ |demo-lab-bewley-net/system:admin:log4shell)$ oc apply -k base
-namespace/log4shell created
-service/log4shell created
-deployment.apps/log4shell created
-imagestream.image.openshift.io/log4shell created
-(⎈ |demo-lab-bewley-net/system:admin:log4shell)$
-(⎈ |demo-lab-bewley-net/system:admin:log4shell)$ oc get dc,rs,pod -n log4shell
-NAME                                   DESIRED   CURRENT   READY   AGE
-replicaset.apps/log4shell-5d477577dc   1         1         1       4m29s
-replicaset.apps/log4shell-6599975f67   0         0         0       4m30s
-
-NAME                             READY   STATUS    RESTARTS   AGE
-pod/log4shell-5d477577dc-6cx2s   1/1     Running   0          4m29s
-(⎈ |demo-lab-bewley-net/system:admin:log4shell)$ oc describe deployment log4shell | tail
+oc describe deployment log4shell -n log4shell | tail
 
   Available      True    MinimumReplicasAvailable
   Progressing    True    NewReplicaSetAvailable
 OldReplicaSets:  <none>
-NewReplicaSet:   log4shell-5d477577dc (1/1 replicas created)
+NewReplicaSet:   log4shell-5fc55944f6 (0/0 replicas created)
 Events:
-  Type    Reason             Age    From                   Message
-  ----    ------             ----   ----                   -------
-  Normal  ScalingReplicaSet  4m52s  deployment-controller  Scaled up replica set log4shell-6599975f67 to 1
-  Normal  ScalingReplicaSet  4m51s  deployment-controller  Scaled up replica set log4shell-5d477577dc to 1
-  Normal  ScalingReplicaSet  4m47s  deployment-controller  Scaled down replica set log4shell-6599975f67 to 0
+  Type     Reason                Age   From                   Message
+  ----     ------                ----  ----                   -------
+  Normal   ScalingReplicaSet     30m   deployment-controller  Scaled up replica set log4shell-5fc55944f6 to 1
+  Warning  StackRox enforcement  30m   stackrox/sensor        Deployment violated StackRox policy "Log4Shell: log4j Remote Code Execution vulnerability" and was scaled down
+  Normal   ScalingReplicaSet     30m   deployment-controller  Scaled down replica set log4shell-5fc55944f6 to 0
 ```
+
+Vulnerability will be detected and automatically scaled to zero at deployment time.
+
+
 # Background
 
 App was created as follows:
@@ -70,5 +54,11 @@ oc new-app \
     --dry-run \
     -o yaml > base/application.yaml
 ```
+
+Further modify due to https://issues.redhat.com/browse/OCPBUGSM-22430 thwarting the policy:
+
+* Comment out the imagestream resource
+* Remove the image trigger annotation on the deployment
+* Replace the empty image value in the deployment
 
 
