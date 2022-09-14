@@ -55,7 +55,7 @@ oc new-app \
     -o yaml > base/application.yaml
 ```
 
-Further modify due to https://issues.redhat.com/browse/OCPBUGSM-22430 thwarting the policy:
+Further modify due to https://issues.redhat.com/browse/OCPBUGSM-22430 & https://issues.redhat.com/browse/ROX-7531 thwarting the policy:
 
 * Comment out the imagestream resource
 * Remove the image trigger annotation on the deployment
